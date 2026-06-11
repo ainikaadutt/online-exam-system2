@@ -1,5 +1,5 @@
 package com.ainika.online_exam_system.entity;
-
+import com.ainika.online_exam_system.enums.Role;
 
 import jakarta.persistence.*;
 
@@ -25,11 +25,11 @@ public class User {
         this.email = email;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -57,6 +57,6 @@ public class User {
 
     private String password;
 
-    private String role;
-
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
