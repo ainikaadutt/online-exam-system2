@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import java.util.Date;
+import io.jsonwebtoken.Claims;
 
 @Service
 public class JwtService {
@@ -22,5 +23,22 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(SECRET_KEY)
                 .compact();
+    }
+    public String extractEmail(String token) {
+
+        Claims claims = Jwts.parser()
+                .verifyWith(SECRET_KEY)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return claims.getSubject();
+    }
+
+    public boolean validateToken(String token, String email) {
+
+        String extractedEmail = extractEmail(token);
+
+        return extractedEmail.equals(email);
     }
 }
