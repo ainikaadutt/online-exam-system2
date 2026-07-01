@@ -33,6 +33,11 @@ public class SecurityConfig {
                         .requestMatchers("/users/**")
                         .permitAll()
 
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
                         .requestMatchers("/exams/**")
                         .hasRole("TEACHER")
 
