@@ -1,8 +1,10 @@
 package com.ainika.online_exam_system.security;
-
+import org.springframework.http.HttpMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import org.springframework.http.HttpMethod;
 
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
-
 
 @Configuration
 public class SecurityConfig {
@@ -73,7 +74,8 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http)
             throws Exception {
 
         http
@@ -83,7 +85,13 @@ public class SecurityConfig {
 
                 .csrf(csrf -> csrf.disable())
 
+
                 .authorizeHttpRequests(auth -> auth
+
+
+                        // =========================
+                        // PUBLIC
+                        // =========================
 
                         .requestMatchers("/auth/login")
                         .permitAll()
@@ -97,23 +105,86 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
+
+                        // =========================
+                        // EXAMS
+                        // =========================
+
                         .requestMatchers("/exams/**")
-                        .hasRole("TEACHER")
+                        .hasAnyRole(
+                                "TEACHER",
+                                "STUDENT"
+                        )
+
+
+                        // =========================
+                        // QUESTIONS
+                        // =========================
 
                         .requestMatchers("/questions/**")
                         .hasRole("TEACHER")
 
+
+                        // =========================
+                        // STUDENT RESPONSES
+                        // =========================
+
                         .requestMatchers("/responses/**")
                         .hasRole("STUDENT")
 
-                        .requestMatchers("/attempts/**")
+
+                        // =========================
+                        // EXAM ATTEMPTS
+                        // =========================
+
+                        // Student submits an exam
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/attempts/submit"
+                        )
                         .hasRole("STUDENT")
+
+
+                        // Student views their own attempts
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/attempts/student"
+                        )
+                        .hasRole("STUDENT")
+
+
+                        // Teacher views all attempts
+                        // Used by Teacher Dashboard / Results
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/attempts"
+                        )
+                        .hasRole("TEACHER")
+
+
+                        // Specific attempt
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/attempts/*"
+                        )
+                        .hasAnyRole(
+                                "TEACHER",
+                                "STUDENT"
+                        )
+
+
+                        // =========================
+                        // EVERYTHING ELSE
+                        // =========================
 
                         .anyRequest()
                         .authenticated()
                 )
 
-                .httpBasic(Customizer.withDefaults());
+
+                .httpBasic(
+                        Customizer.withDefaults()
+                );
 
 
         http.addFilterBefore(
@@ -125,3 +196,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+

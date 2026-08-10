@@ -9,9 +9,8 @@ public class StudentResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Integer marks;
-
-
 
     private String selectedAnswer;
 
@@ -23,8 +22,24 @@ public class StudentResponse {
     @JoinColumn(name = "question_id")
     private Question question;
 
+    @ManyToOne
+    @JoinColumn(name = "attempt_id")
+    private ExamAttempt attempt;
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getMarks() {
+        return marks;
+    }
+
+    public void setMarks(Integer marks) {
+        this.marks = marks;
     }
 
     public String getSelectedAnswer() {
@@ -33,10 +48,6 @@ public class StudentResponse {
 
     public void setSelectedAnswer(String selectedAnswer) {
         this.selectedAnswer = selectedAnswer;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public User getStudent() {
@@ -54,11 +65,12 @@ public class StudentResponse {
     public void setQuestion(Question question) {
         this.question = question;
     }
-    public Integer getMarks() {
-        return marks;
+
+    public ExamAttempt getAttempt() {
+        return attempt;
     }
 
-    public void setMarks(Integer marks) {
-        this.marks = marks;
+    public void setAttempt(ExamAttempt attempt) {
+        this.attempt = attempt;
     }
 }

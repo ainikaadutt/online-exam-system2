@@ -2,6 +2,7 @@ package com.ainika.online_exam_system.service;
 
 import com.ainika.online_exam_system.entity.User;
 import com.ainika.online_exam_system.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
@@ -16,13 +17,17 @@ public class CustomUserDetailsService
     @Autowired
     private UserRepository userRepository;
 
+
     @Override
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found"));
+                        new UsernameNotFoundException(
+                                "User not found"
+                        )
+                );
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
@@ -33,5 +38,17 @@ public class CustomUserDetailsService
                         )
                 )
         );
+    }
+
+
+    public User getUserByEmail(String email)
+            throws UsernameNotFoundException {
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found"
+                        )
+                );
     }
 }
